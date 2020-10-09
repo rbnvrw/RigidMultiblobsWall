@@ -527,7 +527,7 @@ def force_torque_calculator_sort_by_bodies(bodies, r_vectors, *args, **kwargs):
   where f_i and t_i are the force and torque on the body i.
   '''
   # Create auxiliar variables
-  Nblobs = r_vectors.size / 3
+  Nblobs = int(np.round(r_vectors.size / 3))
   force_torque_bodies = np.zeros((2*len(bodies), 3))
   force_blobs = np.zeros((Nblobs, 3))
   blob_mass = 1.0

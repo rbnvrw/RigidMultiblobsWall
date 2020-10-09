@@ -4,7 +4,7 @@ import scipy.linalg
 import scipy.spatial as spatial
 import scipy.sparse.linalg as spla
 import subprocess
-import cPickle
+import pickle as cPickle
 from functools import partial
 import sys
 import time
@@ -34,11 +34,11 @@ while found_functions is False:
         found_functions = True
     except ImportError:
         path_to_append += '../'
-        print
+        print()
         'searching functions in path ', path_to_append
         sys.path.append(path_to_append)
         if len(path_to_append) > 21:
-            print
+            print()
             '\nProjected functions not found. Edit path in multi_bodies.py'
             sys.exit()
 
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # Set random generator state
     if read.random_state is not None:
       with open(read.random_state, 'rb') as f:
-	np.random.set_state(cPickle.load(f))
+        np.random.set_state(cPickle.load(f))
     elif read.seed is not None:
       np.random.seed(int(read.seed))
     
@@ -80,27 +80,27 @@ if __name__ == '__main__':
     body_types = []
     body_names = []
     for ID, structure in enumerate(structures):
-      print 'Creating structures = ', structure[1]
+      print(('Creating structures = ', structure[1]))
       # Read vertex and clones files
       struct_ref_config = read_vertex_file.read_vertex_file(structure[0])
       num_bodies_struct, struct_locations, struct_orientations = read_clones_file.read_clones_file(structure[1])
       # Read slip file if it exists
       slip = None
       if(len(structure) > 2):
-	slip = read_slip_file.read_slip_file(structure[2])
+        slip = read_slip_file.read_slip_file(structure[2])
       body_types.append(num_bodies_struct)
       body_names.append(structures_ID[ID])
       # Create each body of type structure
       for i in range(num_bodies_struct):
-	b = body.Body(struct_locations[i], struct_orientations[i], struct_ref_config, a)
-	b.ID = structures_ID[ID]
-	# Calculate body length for the RFD
-	if i == 0:
-	  b.calc_body_length()
-	else:
-	  b.body_length = bodies[-1].body_length
-	# Append bodies to total bodies list
-	bodies.append(b)
+        b = body.Body(struct_locations[i], struct_orientations[i], struct_ref_config, a)
+        b.ID = structures_ID[ID]
+        # Calculate body length for the RFD
+        if i == 0:
+          b.calc_body_length()
+        else:
+          b.body_length = bodies[-1].body_length
+        # Append bodies to total bodies list
+        bodies.append(b)
     bodies = np.array(bodies)
 
     # Set some more variables
@@ -114,18 +114,16 @@ if __name__ == '__main__':
     n_save = read.n_save
     dt = read.dt 
     
-    print L
+    print(L)
     
     for b in bodies:
       for i in range(3):
-	if L[i] > 0:
-	  while b.location[i] < 0:
-	    b.location[i] += L[i]
-	  while b.location[i] > L[i]:
-	    b.location[i] -= L[i]
-	  
-    
-    
+        if L[i] > 0:
+          while b.location[i] < 0:
+            b.location[i] += L[i]
+          while b.location[i] > L[i]:
+            b.location[i] -= L[i]
+          
     firm_delta = read.firm_delta
     debye_length_delta = 2.0*a*firm_delta/np.log(1.0e1) 
     repulsion_strength_delta = read.repulsion_strength_firm
@@ -145,7 +143,7 @@ if __name__ == '__main__':
     t0 = time.time()
     LSolv.Set_R_Mats()
     dt1 = time.time() - t0
-    print("Make R mats time : %s" %dt1)
+    print(("Make R mats time : %s" %dt1))
     
     
     total_rej = 0
@@ -154,7 +152,7 @@ if __name__ == '__main__':
     equilib_time = 0.2
     
     for n in range(n_steps):
-      print n
+      print(n)
       t0 = time.time()
       time_s = n*dt
       
@@ -190,48 +188,48 @@ if __name__ == '__main__':
       t0 = time.time()
       reject_wall, reject_jump = LSolv.Update_Bodies_Trap(FT_calc)
       dt1 = time.time() - t0
-      print("walltime for time step : %s" %dt1)
-      print("Number of rejected timesteps wall: %s" %LSolv.num_rejections_wall)
-      print("Number of rejected timesteps jump: %s" %LSolv.num_rejections_jump)
+      print(("walltime for time step : %s" %dt1))
+      print(("Number of rejected timesteps wall: %s" %LSolv.num_rejections_wall))
+      print(("Number of rejected timesteps jump: %s" %LSolv.num_rejections_jump))
       
       if ((reject_wall+reject_jump) == 0) and (n % n_save == 0):
-	body_offset = 0
-	for i, ID in enumerate(structures_ID):
-	  name = output_name + '.' + ID + '.config'
-	  if n == 0:
-	    status = 'w'
-	  else:
-	    status = 'a'
-	  with open(name, status) as f_ID:
-	    f_ID.write(str(body_types[i]) + '\n')
-	    for j in range(body_types[i]):
-	      orientation = bodies[body_offset + j].orientation.entries
-	      f_ID.write('%s %s %s %s %s %s %s\n' % (bodies[body_offset + j].location[0], 
-						      bodies[body_offset + j].location[1], 
-						      bodies[body_offset + j].location[2], 
-						      orientation[0], 
-						      orientation[1], 
-						      orientation[2], 
-						      orientation[3]))
-	    body_offset += body_types[i]
+        body_offset = 0
+        for i, ID in enumerate(structures_ID):
+          name = output_name + '.' + ID + '.config'
+          if n == 0:
+            status = 'w'
+          else:
+            status = 'a'
+          with open(name, status) as f_ID:
+            f_ID.write(str(body_types[i]) + '\n')
+            for j in range(body_types[i]):
+              orientation = bodies[body_offset + j].orientation.entries
+              f_ID.write('%s %s %s %s %s %s %s\n' % (bodies[body_offset + j].location[0], 
+                                                      bodies[body_offset + j].location[1], 
+                                                      bodies[body_offset + j].location[2], 
+                                                      orientation[0], 
+                                                      orientation[1], 
+                                                      orientation[2], 
+                                                      orientation[3]))
+            body_offset += body_types[i]
       else:
-	total_rej += 1
-	body_offset = 0
-	for i, ID in enumerate(structures_ID):
-	  name = output_name + '.' + ID + '.rejected_config'
-	  if total_rej == 1:
-	    status = 'w'
-	  else:
-	    status = 'a'
-	  with open(name, status) as f_ID:
-	    f_ID.write(str(body_types[i]) + '\n')
-	    for j in range(body_types[i]):
-	      orientation = bodies[body_offset + j].orientation.entries
-	      f_ID.write('%s %s %s %s %s %s %s\n' % (bodies[body_offset + j].location[0], 
-						      bodies[body_offset + j].location[1], 
-						      bodies[body_offset + j].location[2], 
-						      orientation[0], 
-						      orientation[1], 
-						      orientation[2], 
-						      orientation[3]))
-	    body_offset += body_types[i]
+        total_rej += 1
+        body_offset = 0
+        for i, ID in enumerate(structures_ID):
+          name = output_name + '.' + ID + '.rejected_config'
+          if total_rej == 1:
+            status = 'w'
+          else:
+            status = 'a'
+          with open(name, status) as f_ID:
+            f_ID.write(str(body_types[i]) + '\n')
+            for j in range(body_types[i]):
+              orientation = bodies[body_offset + j].orientation.entries
+              f_ID.write('%s %s %s %s %s %s %s\n' % (bodies[body_offset + j].location[0], 
+                                                      bodies[body_offset + j].location[1], 
+                                                      bodies[body_offset + j].location[2], 
+                                                      orientation[0], 
+                                                      orientation[1], 
+                                                      orientation[2], 
+                                                      orientation[3]))
+            body_offset += body_types[i]

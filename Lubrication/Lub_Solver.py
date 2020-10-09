@@ -76,8 +76,8 @@ class Lub_Solver(object):
       
     if L is not None:
       for i in range(3):
-	if(L[i] > 0):
-	  r[i] = r[i] - int(r[i] / L[i] + 0.5 * (int(r[i]>0) - int(r[i]<0))) * L[i]
+        if(L[i] > 0):
+          r[i] = r[i] - int(r[i] / L[i] + 0.5 * (int(r[i]>0) - int(r[i]<0))) * L[i]
     #print r
     return r 
   
@@ -85,11 +85,11 @@ class Lub_Solver(object):
     r_vecs = np.copy(r_vecs_np)
     for r_vec in r_vecs:
       for i in range(3):
-	if L[i] > 0:
-	  while r_vec[i] < 0:
-	    r_vec[i] += L[i]
-	  while r_vec[i] > L[i]:
-	    r_vec[i] -= L[i]
+        if L[i] > 0:
+          while r_vec[i] < 0:
+            r_vec[i] += L[i]
+          while r_vec[i] > L[i]:
+            r_vec[i] -= L[i]
     return r_vecs
   
   
@@ -510,13 +510,13 @@ class Lub_Solver(object):
 
       isolated = [];
       for j in range(num_particles):
-	s1 = r_vecs[j]
-	if s1[2] < self.cutoff*self.a: 
-	  continue
-	idx = r_tree.query_ball_point(s1,r=self.cutoff*self.a)
-	idx_trim = [i for i in idx if i > j]
-	if not idx_trim:
-	  isolated.append(j)
+        s1 = r_vecs[j]
+        if s1[2] < self.cutoff*self.a: 
+          continue
+        idx = r_tree.query_ball_point(s1,r=self.cutoff*self.a)
+        idx_trim = [i for i in idx if i > j]
+        if not idx_trim:
+          isolated.append(j)
       ##############
       
       start = time.time()
@@ -524,7 +524,7 @@ class Lub_Solver(object):
       Eig_Shift_R_Sup = self.R_Sup + sp.diags(small*np.ones(6*num_particles),0,format='csc')
       factor = cholesky(Eig_Shift_R_Sup)
       end = time.time()
-      print 'factor time : '+ str((end - start))
+      print(('factor time : '+ str((end - start))))
       PC_operator_partial = partial(self.IpMDR_PC, R_fact=factor,isolated=isolated)
       
       ################## SWAN #####################
@@ -534,8 +534,8 @@ class Lub_Solver(object):
       #onev = np.ones(6*num_particles)
       #diag_m = onev
       #for k in range(num_particles):
-	#diag_m[6*k:6*k+3] *= (1.0/gamma)
-	#diag_m[6*k+3:6*k+6] *= (1.0/gamma_r)
+        #diag_m[6*k:6*k+3] *= (1.0/gamma)
+        #diag_m[6*k+3:6*k+6] *= (1.0/gamma_r)
       #Shift_R_Sup = sp.diags(diag_m,0,format='csc')*self.Delta_R + sp.diags(onev,0,format='csc')
       #factor = cholesky(Shift_R_Sup)
       #end = time.time()
@@ -698,9 +698,9 @@ class Lub_Solver(object):
     if (reject_wall+reject_jump)==0:
       L = self.periodic_length
       for b in self.bodies:
-	b.location = b.location_new
-	b.orientation = b.orientation_new
-	
+        b.location = b.location_new
+        b.orientation = b.orientation_new
+        
 
     self.Set_R_Mats() ######## VERY IMPORTANT
     return reject_wall, reject_jump
@@ -719,7 +719,7 @@ class Lub_Solver(object):
     start = time.time()
     FT = FT_calc(self.bodies, r_vecs)
     end = time.time()
-    print 'F calc time : '+ str((end - start))
+    print(('F calc time : '+ str((end - start))))
     FT = FT.flatten()
     FT = FT[:,np.newaxis]
     
@@ -735,7 +735,7 @@ class Lub_Solver(object):
           NewNorm = np.minimum(Tn,Cut_Torque)/Tn
           T_omega = NewNorm[:,None]*T_omega
       end = time.time()
-      print 'Omega time : '+ str((end - start))
+      print(('Omega time : '+ str((end - start))))
       FTrs[:,3::] += T_omega
       FT = np.reshape(FTrs,(6*len(self.bodies),1))
       
@@ -747,14 +747,14 @@ class Lub_Solver(object):
     MXm = MXm[:,np.newaxis]
     Mhalf = X + MXm
     end = time.time()
-    print 'root time : '+ str((end - start))
+    print(('root time : '+ str((end - start))))
     
     
     # compute predictor velocities and update positions
     start = time.time()
     vel_p, res_p = self.Lubrucation_solve(X = Mhalf, Xm = FT, X0=VO_guess)
     end = time.time()
-    print 'solve 1 : '+ str((end - start))
+    print(('solve 1 : '+ str((end - start))))
     
 
     for k, b in enumerate(self.bodies):
@@ -786,7 +786,7 @@ class Lub_Solver(object):
     start = time.time()
     FT_C = FT_calc(self.bodies, r_vecs_c)
     end = time.time()
-    print 'F calc time : '+ str((end - start))
+    print(('F calc time : '+ str((end - start))))
     FT_C = FT_C.flatten()
     FT_C = FT_C[:,np.newaxis]
     
@@ -814,7 +814,7 @@ class Lub_Solver(object):
     start = time.time()
     vel_c, res_c = self.Lubrucation_solve(X = RHS_X_C, Xm = RHS_Xm_C, X0=VO_guessc)
     end = time.time()
-    print 'solve 2 : '+ str((end - start))
+    print(('solve 2 : '+ str((end - start))))
     
     vel_trap = 0.5 * (vel_c + vel_p)
     
@@ -831,14 +831,14 @@ class Lub_Solver(object):
     
     if (reject_wall+reject_jump)==0:
       for b in self.bodies:
-	np.copyto(b.location, b.location_new)
+        np.copyto(b.location, b.location_new)
         b.orientation = copy.copy(b.orientation_new)
     else:
       for b in self.bodies:
-	np.copyto(b.location, b.location_old)
+        np.copyto(b.location, b.location_old)
         b.orientation = copy.copy(b.orientation_old)
 
-	
+        
 
     self.Set_R_Mats() ######## VERY IMPORTANT
     if Out_Torque:
@@ -856,11 +856,11 @@ class Lub_Solver(object):
     r_vecs = self.put_r_vecs_in_periodic_box(r_vecs_np,self.periodic_length)
     
     def Mrr(torque):
-	return self.mobility_rot_times_torque_wall(r_vecs, torque, self.eta, self.a, periodic_length=self.periodic_length)
+        return self.mobility_rot_times_torque_wall(r_vecs, torque, self.eta, self.a, periodic_length=self.periodic_length)
     def Mtr(torque):
-	return self.mobility_trans_times_torque_wall(r_vecs, torque, self.eta, self.a, periodic_length=self.periodic_length)
+        return self.mobility_trans_times_torque_wall(r_vecs, torque, self.eta, self.a, periodic_length=self.periodic_length)
     def Mtt(force):
-	return self.mobility_trans_times_force_wall(r_vecs, force, self.eta, self.a, periodic_length=self.periodic_length)
+        return self.mobility_trans_times_force_wall(r_vecs, force, self.eta, self.a, periodic_length=self.periodic_length)
     
     
     def V_T_Mat_Mult(VT):
@@ -935,7 +935,7 @@ class Lub_Solver(object):
     res_list = []
     (VT_gmres, info_precond) = pyamg.krylov.gmres(A, RHS, M=PC, x0 = X0_vt, tol=self.tolerance, maxiter=100, restrt = min(100,A.shape[0]),residuals=res_list)
 
-    print res_list
+    print(res_list)
     # Scale solution with RHS norm
     if RHS_norm > 0:
       VT_gmres = VT_gmres * RHS_norm
@@ -974,9 +974,9 @@ class Lub_Solver(object):
     if (reject_wall+reject_jump)==0:
       L = self.periodic_length
       for b in self.bodies:
-	b.location = b.location_new
-	b.orientation = b.orientation_new
-	
+        b.location = b.location_new
+        b.orientation = b.orientation_new
+        
     return reject_wall, reject_jump
         
   def Check_Update_With_Jump_Trap(self):
@@ -991,18 +991,18 @@ class Lub_Solver(object):
     for j in range(num_particles):
       s1 = r_vecs[j]
       if s1[2] < 0:
-	print "rejected time step, wall"
-	reject_wall = 1
-	return reject_wall, reject_jump
+        print("rejected time step, wall")
+        reject_wall = 1
+        return reject_wall, reject_jump
       
       s1_old = r_vecs_old[j]
       r = s1-s1_old
       r = self.project_to_periodic_image(r,self.periodic_length)
       disp = np.linalg.norm(r)
       if disp > 2*self.a:
-	print "rejected time step large jump: ", disp, s1, s1_old
-	reject_jump = 1
-	return reject_wall, reject_jump
+        print("rejected time step large jump: ", disp, s1, s1_old)
+        reject_jump = 1
+        return reject_wall, reject_jump
       
     return reject_wall, reject_jump
  
@@ -1019,17 +1019,17 @@ class Lub_Solver(object):
     for j in range(num_particles):
       s1 = r_vecs[j]
       if s1[2] < 0:
-	print "rejected time step, wall"
-	reject_wall = 1
-	return reject_wall, reject_jump
+        print("rejected time step, wall")
+        reject_wall = 1
+        return reject_wall, reject_jump
       
       s1_old = r_vecs_old[j]
       r = s1-s1_old
       r = self.project_to_periodic_image(r,self.periodic_length)
       disp = np.linalg.norm(r)
       if disp > 2*self.a:
-	print "rejected time step large jump: ", disp, s1, s1_old
-	reject_jump = 1
-	return reject_wall, reject_jump
+        print("rejected time step large jump: ", disp, s1, s1_old)
+        reject_jump = 1
+        return reject_wall, reject_jump
       
     return reject_wall, reject_jump
