@@ -24,7 +24,7 @@ class Lub_Solver(object):
   '''
   Class to handle Lubrication solve
   '''  
-  def __init__(self, bodies, a, eta, cutoff, periodic_length, debye_length=1e-4):
+  def __init__(self, bodies, a, eta, cutoff, periodic_length, debye_length=1e-4, pycuda=True):
     '''
     Constructor. Take arguments like ...
     '''
@@ -53,16 +53,28 @@ class Lub_Solver(object):
     self.Delta_R_cut = None
     self.Delta_R_cut_wall = None
     
-    #if domain is a 'single_wall'
-    self.mobility_trans_times_force_wall = mob.single_wall_mobility_trans_times_force_pycuda #pycuda
-    self.mobility_trans_times_torque_wall = mob.single_wall_mobility_trans_times_torque_pycuda #pycuda
-    self.mobility_rot_times_force_wall = mob.single_wall_mobility_rot_times_force_pycuda #pycuda
-    self.mobility_rot_times_torque_wall = mob.single_wall_mobility_rot_times_torque_pycuda #pycuda
-    #if domain is a 'no_wall'
-    self.mobility_trans_times_force = mob.no_wall_mobility_trans_times_force_pycuda #pycuda
-    self.mobility_trans_times_torque = mob.no_wall_mobility_trans_times_torque_pycuda #pycuda
-    self.mobility_rot_times_force = mob.no_wall_mobility_rot_times_force_pycuda #pycuda
-    self.mobility_rot_times_torque = mob.no_wall_mobility_rot_times_torque_pycuda #pycuda
+    if pycuda:
+        #if domain is a 'single_wall'
+        self.mobility_trans_times_force_wall = mob.single_wall_mobility_trans_times_force_pycuda #pycuda
+        self.mobility_trans_times_torque_wall = mob.single_wall_mobility_trans_times_torque_pycuda #pycuda
+        self.mobility_rot_times_force_wall = mob.single_wall_mobility_rot_times_force_pycuda #pycuda
+        self.mobility_rot_times_torque_wall = mob.single_wall_mobility_rot_times_torque_pycuda #pycuda
+        #if domain is a 'no_wall'
+        self.mobility_trans_times_force = mob.no_wall_mobility_trans_times_force_pycuda #pycuda
+        self.mobility_trans_times_torque = mob.no_wall_mobility_trans_times_torque_pycuda #pycuda
+        self.mobility_rot_times_force = mob.no_wall_mobility_rot_times_force_pycuda #pycuda
+        self.mobility_rot_times_torque = mob.no_wall_mobility_rot_times_torque_pycuda #pycuda
+    else:
+        #if domain is a 'single_wall'
+        self.mobility_trans_times_force_wall = mob.single_wall_mobility_trans_times_force_numba #numba
+        self.mobility_trans_times_torque_wall = mob.single_wall_mobility_trans_times_torque_numba #numba
+        self.mobility_rot_times_force_wall = mob.single_wall_mobility_rot_times_force_numba #numba
+        self.mobility_rot_times_torque_wall = mob.single_wall_mobility_rot_times_torque_numba #numba
+        #if domain is a 'no_wall'
+        self.mobility_trans_times_force = mob.no_wall_mobility_trans_times_force_numba #numba
+        self.mobility_trans_times_torque = mob.no_wall_mobility_trans_times_torque_numba #numba
+        self.mobility_rot_times_force = mob.no_wall_mobility_rot_times_force_numba #numba
+        self.mobility_rot_times_torque = mob.no_wall_mobility_rot_times_torque_numba #numba
     
   def project_to_periodic_image(self, r, L):
     '''
