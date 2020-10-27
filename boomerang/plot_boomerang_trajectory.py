@@ -1,4 +1,5 @@
 ''' Plot animation of the Boomerang. '''
+from __future__ import division, print_function
 import numpy as np
 import os
 import sys
@@ -190,3 +191,4 @@ if __name__ == '__main__':
   
   #start the interaction and timer
   renderWindowInteractor.Start()
+

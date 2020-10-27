@@ -18,9 +18,14 @@ tip1= [ 0.  2.1  0.]
 alpha= 6.43600016e-01
 beta = 6.43600016e-01
 '''
+from __future__ import division, print_function
 import numpy as np
+
 import boomerang as bm
 from quaternion_integrator.quaternion import Quaternion
+
+
+
 
 if __name__ == '__main__':
   
@@ -102,3 +107,6 @@ if __name__ == '__main__':
   
   print('\nAverage translational mobility at CoM = ', (mobility[0, 0]+mobility[1, 1]+mobility[2, 2])/3.0)
   print('#END')
+
+
+

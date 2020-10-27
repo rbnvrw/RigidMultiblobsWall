@@ -4,7 +4,7 @@ import scipy.linalg
 import scipy.spatial as spatial
 import scipy.sparse.linalg as spla
 import subprocess
-import pickle
+import pickle as cPickle
 from functools import partial
 import sys
 import time
@@ -34,10 +34,12 @@ while found_functions is False:
         found_functions = True
     except ImportError:
         path_to_append += '../'
-        print('searching functions in path ', path_to_append)
+        print()
+        'searching functions in path ', path_to_append
         sys.path.append(path_to_append)
         if len(path_to_append) > 21:
-            print('\nProjected functions not found. Edit path in multi_bodies.py')
+            print()
+            '\nProjected functions not found. Edit path in multi_bodies.py'
             sys.exit()
 
 if __name__ == '__main__':
@@ -65,20 +67,20 @@ if __name__ == '__main__':
     # Set random generator state
     if read.random_state is not None:
       with open(read.random_state, 'rb') as f:
-	np.random.set_state(pickle.load(f))
+        np.random.set_state(cPickle.load(f))
     elif read.seed is not None:
       np.random.seed(int(read.seed))
     
     # Save random generator state
     with open(output_name + '.random_state', 'wb') as f:
-      pickle.dump(np.random.get_state(), f)
+      cPickle.dump(np.random.get_state(), f)
 
     # Create rigid bodies
     bodies = []
     body_types = []
     body_names = []
     for ID, structure in enumerate(structures):
-      print('Creating structures = ', structure[1])
+      print(('Creating structures = ', structure[1]))
       # Read vertex and clones files
       struct_ref_config = read_vertex_file.read_vertex_file(structure[0])
       num_bodies_struct, struct_locations, struct_orientations = read_clones_file.read_clones_file(structure[1])
